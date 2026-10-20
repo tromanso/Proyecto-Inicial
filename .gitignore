@@ -1,0 +1,18 @@
+# Python / Virtual Environment
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+ENV/
+
+# Django local files
+db.sqlite3
+media/
+staticfiles/
+
+# VS Code specific settings
+.vscode/
+Proyecto-Inicial/
+Proyecto-Inicial-1/
+*.code-workspace
