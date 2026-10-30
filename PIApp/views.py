@@ -2,8 +2,13 @@ from django.shortcuts import render
 
 # Create your views here.
 
-def login_view(request):
+def login(request):
     if request.method == 'GET':
         return render(request, 'login.html')
     elif request.method == 'POST':
-        return render(request, 'login.html', {"text": "Function yet to be implemented"})
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        contexto = {
+            'mensaje': f'Intentaste ingresar con: {email}'
+        }
+        return render(request, 'login.html', contexto)

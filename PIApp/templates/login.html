@@ -1,19 +1,174 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FitApp</title>
-    <!-- Link to an external CSS stylesheet (optional) -->
-    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* 1. Estilos generales y centrado de la pantalla */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #18064a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* 2. Estilos para la tarjeta contenedora */
+        .card-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        /* 3. Estilos para los campos de texto y etiquetas */
+        .form-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333333;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        /* 4. Estilos para el botón de iniciar sesión */
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 5. Estilos para la imagen del logo */
+        .logo-section img {
+            border-radius: 10px;          /* Bordes suavemente redondeados */
+            margin-top: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Sombra ligera a la foto */
+        }
+
+        /* 6. Estilo para el mensaje que envía Python */
+        .message-section {
+            margin-top: 18px;
+            padding: 10px;
+            background-color: #e6f4ea;
+            color: #137333;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* 7. Estilos para los enlaces auxiliares */
+        .extra-links {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .extra-links a {
+            color: #666666;
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .extra-links a:hover {
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        .extra-links span {
+            color: #007bff;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
 
-    <h1>FitApp</h1>
-    <p>Bienvenidos a FitApp</p>
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRadFb2zCIAKiRcGWZf0WaSogpy-hNCmtiC6cf8TrCIeA&s=10" alt="FitApp Logo" width="200">
+    <!-- CONTENEDOR PRINCIPAL (TARJETA) -->
+    <div class="card-container">
 
-    <!-- Link to an external JavaScript file (optional) -->
-    <script src="script.js"></script>
+        <!-- Sección del Encabezado (Título y Subtítulo) -->
+        <header class="header-section">
+            <h1>FitApp</h1>
+            <p>Bienvenidos a FitApp</p>
+        </header>
+
+        <!-- Sección de la Imagen / Logo -->
+        <div class="logo-section">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRadFb2zCIAKiRcGWZf0WaSogpy-hNCmtiC6cf8TrCIeA&s=10" alt="FitApp Logo" width="200">
+        </div>
+
+        <!-- FORMULARIO DE LOGIN -->
+        <form method="POST">
+            {% csrf_token %}
+            <br>
+
+            <!-- Campo: Correo Electrónico -->
+            <div class="form-group">
+                <label>Correo electrónico:</label><br>
+                <input type="email" name="email" placeholder="ejemplo@correo.com" required>
+            </div>
+            <br>
+
+            <!-- Campo: Contraseña -->
+            <div class="form-group">
+                <label>Contraseña:</label><br>
+                <input type="password" name="password" placeholder="Tu contraseña" required>
+            </div>
+            <br>
+
+            <!-- Botón de Envío -->
+            <div class="button-group">
+                <button type="submit">Iniciar Sesión</button>
+            </div>
+
+            <!-- Enlaces adicionales -->
+            <div class="extra-links">
+                <a href="#">¿Olvidaste tu contraseña?</a>
+                <a href="#">¿No tienes cuenta? <span>Regístrate</span></a>
+            </div>
+        </form>
+
+        <!-- SECCIÓN DE MENSAJES (RESPUESTA DE PYTHON) -->
+        {% if mensaje %}
+            <div class="message-section">
+                <p>{{ mensaje }}</p>
+            </div>
+        {% endif %}
+
+    </div>
+
 </body>
 </html>
