@@ -29,3 +29,4 @@ git push -u origin nombre-de-mi-cambio
 ```
 
 Luego puedes abrir un pull request en GitHub para que el equipo revise e integre la rama.
+python manage.py runserver 0.0.0.0:8000
