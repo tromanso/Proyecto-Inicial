@@ -1,19 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitApp</title>
-    <!-- Link to an external CSS stylesheet (optional) -->
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-    <h1>FitApp</h1>
-    <p>Bienvenidos a FitApp</p>
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRadFb2zCIAKiRcGWZf0WaSogpy-hNCmtiC6cf8TrCIeA&s=10" alt="FitApp Logo" width="200">
-
-    <!-- Link to an external JavaScript file (optional) -->
-    <script src="script.js"></script>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Iniciar sesión · FitApp{% endblock %}
+{% block content %}
+<section class="auth-layout">
+    <div class="welcome-panel">
+        <p class="eyebrow">ALIMENTACIÓN Y DEPORTE</p>
+        <h1>Tu bienestar también se entrena.</h1>
+        <p>Organiza tus hábitos y encuentra ideas de comidas que se ajusten a tus preferencias.</p>
+        <div class="welcome-decoration" aria-hidden="true">✳</div>
+    </div>
+    <div class="form-panel">
+        <p class="eyebrow">QUÉ BUENO VERTE</p>
+        <h2>Iniciar sesión</h2>
+        <p class="muted">Ingresa a tu cuenta para continuar.</p>
+        <form method="post">
+            {% csrf_token %}
+            <label for="email">Correo electrónico</label>
+            <input id="email" name="email" type="email" autocomplete="email" required>
+            <label for="password">Contraseña</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required>
+            <button class="button button-primary button-full" type="submit">Entrar</button>
+        </form>
+        <p class="form-switch">¿Aún no tienes cuenta? <a href="{% url 'signup' %}">Crear cuenta</a></p>
+    </div>
+</section>
+{% endblock %}

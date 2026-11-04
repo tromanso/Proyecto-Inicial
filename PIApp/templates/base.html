@@ -1,0 +1,34 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}FitApp{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'PIApp/styles.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}">
+            <span class="brand-mark">F</span> FitApp
+        </a>
+        {% if user.is_authenticated %}
+            <nav aria-label="Navegación principal">
+                <a href="{% url 'dashboard' %}">Inicio</a>
+                <a href="{% url 'logout' %}">Cerrar sesión</a>
+            </nav>
+        {% endif %}
+    </header>
+    <main class="page">
+        {% if messages %}
+            <div class="messages" role="status">
+                {% for message in messages %}
+                    <p class="message {{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">FitApp · Hábitos saludables, paso a paso</footer>
+</body>
+</html>
