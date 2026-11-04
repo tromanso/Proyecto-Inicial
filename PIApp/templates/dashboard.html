@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Mi inicio · FitApp{% endblock %}
+{% block content %}
+<section class="dashboard-heading">
+    <div>
+        <p class="eyebrow">TU ESPACIO FITAPP</p>
+        <h1>¡Hola, {{ request.user.email }}!</h1>
+        <p class="muted">Aquí tienes un resumen de tu perfil y tu calendario de comidas.</p>
+    </div>
+</section>
+
+<section class="summary-grid">
+    <article class="card summary-card">
+        <div class="card-topline">
+            <div>
+                <p class="eyebrow">TU PERFIL</p>
+                <h2>Información personal</h2>
+            </div>
+            <span class="icon-bubble" aria-hidden="true">⌂</span>
+        </div>
+        <dl class="details-list">
+            <div><dt>Correo</dt><dd>{{ request.user.email }}</dd></div>
+            <div><dt>Peso</dt><dd>{{ profile.weight_kg }} kg</dd></div>
+            <div><dt>Altura</dt><dd>{{ profile.height_cm }} cm</dd></div>
+            <div><dt>Presupuesto</dt><dd>{{ profile.get_food_budget_display }}</dd></div>
+        </dl>
+        <a class="text-link" href="{% url 'edit_profile' %}?section=profile">Editar perfil <span aria-hidden="true">→</span></a>
+    </article>
+
+    <article class="card summary-card">
+        <div class="card-topline">
+            <div>
+                <p class="eyebrow">TU RUTINA</p>
+                <h2>Actividad deportiva</h2>
+            </div>
+            <span class="icon-bubble icon-bubble-lime" aria-hidden="true">↗</span>
+        </div>
+        <dl class="details-list">
+            <div><dt>Frecuencia</dt><dd>{{ profile.get_activity_frequency_display|default:"Aún no indicada" }}</dd></div>
+            <div><dt>Deportes</dt><dd>{{ profile.sports|join:", "|default:"Aún no indicados" }}</dd></div>
+        </dl>
+        <a class="text-link" href="{% url 'edit_profile' %}?section=activity">Editar actividad <span aria-hidden="true">→</span></a>
+    </article>
+</section>
+
+<section class="card bmi-card">
+    <div>
+        <p class="eyebrow">REFERENCIA INFORMATIVA</p>
+        <h2>Tu IMC: {{ bmi }}</h2>
+        <p class="muted">{{ bmi_label }}</p>
+    </div>
+    <p class="bmi-note">El IMC es una referencia general, no un diagnóstico ni una indicación médica. Estas ideas de comidas son ejemplos y no sustituyen la orientación de un profesional de nutrición.</p>
+</section>
+
+<section class="calendar-section">
+    <div class="calendar-heading">
+        <div>
+            <p class="eyebrow">IDEAS PARA ORGANIZARTE</p>
+            <h2>Calendario de comidas</h2>
+            <p class="muted">Ejemplos de comidas con un presupuesto {{ profile.get_food_budget_display|lower }}.</p>
+        </div>
+        <span class="month-pill">{{ month_name }}</span>
+    </div>
+    <div class="calendar-scroll">
+        <div class="calendar-grid" role="table" aria-label="Calendario mensual de comidas">
+            <div class="weekday">Lun</div><div class="weekday">Mar</div><div class="weekday">Mié</div>
+            <div class="weekday">Jue</div><div class="weekday">Vie</div><div class="weekday">Sáb</div><div class="weekday">Dom</div>
+            {% for week in calendar_weeks %}
+                {% for day in week %}
+                    <article class="day-card {% if not day.in_month %}day-outside{% endif %}">
+                        <span class="day-number">{{ day.date.day }}</span>
+                        <ul>
+                            <li><strong>Desayuno</strong> {{ day.meals.0 }}</li>
+                            <li><strong>Comida</strong> {{ day.meals.1 }}</li>
+                            <li><strong>Cena</strong> {{ day.meals.2 }}</li>
+                        </ul>
+                    </article>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Tu actividad · FitApp{% endblock %}
+{% block content %}
+<section class="form-page">
+    <div class="form-panel form-panel-wide">
+        <p class="eyebrow">PASO 2 DE 2 · TU ACTIVIDAD</p>
+        <h1>¿Cómo te mueves?</h1>
+        <p class="muted">No hay respuestas correctas o incorrectas; queremos conocer tu rutina.</p>
+        <form method="post">
+            {% csrf_token %}
+            <fieldset>
+                <legend>¿Con qué frecuencia haces deporte?</legend>
+                <div class="choice-list">
+                    {% for value, label in profile.ACTIVITY_CHOICES %}
+                    <label class="choice">
+                        <input type="radio" name="activity_frequency" value="{{ value }}" {% if profile.activity_frequency == value %}checked{% endif %} required>
+                        <span>{{ label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>¿Qué deportes practicas?</legend>
+                <p class="hint">Puedes escribir hasta tres. No es necesario completar todos.</p>
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="sport_1">Deporte 1</label>
+                        <input id="sport_1" name="sport_1" maxlength="40" value="{{ profile.sport_1 }}">
+                    </div>
+                    <div class="field">
+                        <label for="sport_2">Deporte 2</label>
+                        <input id="sport_2" name="sport_2" maxlength="40" value="{{ profile.sport_2 }}">
+                    </div>
+                    <div class="field field-span">
+                        <label for="sport_3">Deporte 3</label>
+                        <input id="sport_3" name="sport_3" maxlength="40" value="{{ profile.sport_3 }}">
+                    </div>
+                </div>
+            </fieldset>
+            <button class="button button-primary button-full" type="submit">Ir a mi inicio</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

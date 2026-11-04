@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Editar información · FitApp{% endblock %}
+{% block content %}
+<section class="form-page">
+    <a class="back-link" href="{% url 'dashboard' %}">← Volver a mi inicio</a>
+    <div class="form-panel form-panel-wide">
+        {% if section == "activity" %}
+            <p class="eyebrow">TU ACTIVIDAD</p>
+            <h1>Editar actividad</h1>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="section" value="activity">
+                <fieldset>
+                    <legend>¿Con qué frecuencia haces deporte?</legend>
+                    <div class="choice-list">
+                        {% for value, label in profile.ACTIVITY_CHOICES %}
+                        <label class="choice">
+                            <input type="radio" name="activity_frequency" value="{{ value }}" {% if profile.activity_frequency == value %}checked{% endif %} required>
+                            <span>{{ label }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>Deportes que practicas</legend>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="sport_1">Deporte 1</label>
+                            <input id="sport_1" name="sport_1" maxlength="40" value="{{ profile.sport_1 }}">
+                        </div>
+                        <div class="field">
+                            <label for="sport_2">Deporte 2</label>
+                            <input id="sport_2" name="sport_2" maxlength="40" value="{{ profile.sport_2 }}">
+                        </div>
+                        <div class="field field-span">
+                            <label for="sport_3">Deporte 3</label>
+                            <input id="sport_3" name="sport_3" maxlength="40" value="{{ profile.sport_3 }}">
+                        </div>
+                    </div>
+                </fieldset>
+                <button class="button button-primary button-full" type="submit">Guardar actividad</button>
+            </form>
+        {% else %}
+            <p class="eyebrow">TU PERFIL</p>
+            <h1>Editar información</h1>
+            <form method="post" class="form-grid">
+                {% csrf_token %}
+                <input type="hidden" name="section" value="profile">
+                <div class="field field-span">
+                    <label for="email">Correo electrónico</label>
+                    <input id="email" name="email" type="email" autocomplete="email" value="{{ request.user.email }}" required>
+                </div>
+                <div class="field">
+                    <label for="weight">Peso (kg)</label>
+                    <input id="weight" name="weight" type="number" min="25" max="300" step="0.1" value="{{ profile.weight_kg }}" required>
+                </div>
+                <div class="field">
+                    <label for="height">Altura (cm)</label>
+                    <input id="height" name="height" type="number" min="100" max="250" step="0.1" value="{{ profile.height_cm }}" required>
+                </div>
+                <div class="field field-span">
+                    <label for="budget">Presupuesto de alimentos</label>
+                    <select id="budget" name="budget" required>
+                        <option value="barato" {% if profile.food_budget == "barato" %}selected{% endif %}>Barato</option>
+                        <option value="economico" {% if profile.food_budget == "economico" %}selected{% endif %}>Económico</option>
+                        <option value="caro" {% if profile.food_budget == "caro" %}selected{% endif %}>Caro</option>
+                    </select>
+                </div>
+                <div class="field field-span">
+                    <button class="button button-primary button-full" type="submit">Guardar perfil</button>
+                </div>
+            </form>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
