@@ -21,19 +21,34 @@
             </fieldset>
             <fieldset>
                 <legend>¿Qué deportes practicas?</legend>
-                <p class="hint">Puedes escribir hasta tres. No es necesario completar todos.</p>
+                <p class="hint">Puedes seleccionar hasta tres. No es necesario completar todos.</p>
                 <div class="form-grid">
                     <div class="field">
                         <label for="sport_1">Deporte 1</label>
-                        <input id="sport_1" name="sport_1" maxlength="40" value="{{ profile.sport_1 }}">
+                        <select id="sport_1" name="sport_1">
+                            <option value="">Selecciona un deporte</option>
+                            {% for value, label in sport_choices %}
+                            <option value="{{ value }}" {% if profile.sport_1 == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="field">
                         <label for="sport_2">Deporte 2</label>
-                        <input id="sport_2" name="sport_2" maxlength="40" value="{{ profile.sport_2 }}">
+                        <select id="sport_2" name="sport_2">
+                            <option value="">Selecciona un deporte</option>
+                            {% for value, label in sport_choices %}
+                            <option value="{{ value }}" {% if profile.sport_2 == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="field field-span">
                         <label for="sport_3">Deporte 3</label>
-                        <input id="sport_3" name="sport_3" maxlength="40" value="{{ profile.sport_3 }}">
+                        <select id="sport_3" name="sport_3">
+                            <option value="">Selecciona un deporte</option>
+                            {% for value, label in sport_choices %}
+                            <option value="{{ value }}" {% if profile.sport_3 == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
             </fieldset>

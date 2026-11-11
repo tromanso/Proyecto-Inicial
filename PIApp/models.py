@@ -13,6 +13,13 @@ class AthleteProfile(models.Model):
         ("a_veces", "Hago deporte a veces"),
         ("pocas_veces", "Hago deporte pocas veces"),
     )
+    SPORT_CHOICES = (
+        ("futbol", "Fútbol"),
+        ("voleibol", "Voleibol"),
+        ("basquetbol", "Básquetbol"),
+        ("tenis", "Tenis"),
+        ("boxeo", "Boxeo"),
+    )
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -31,9 +38,15 @@ class AthleteProfile(models.Model):
         choices=ACTIVITY_CHOICES,
         blank=True,
     )
-    sport_1 = models.CharField("deporte 1", max_length=40, blank=True)
-    sport_2 = models.CharField("deporte 2", max_length=40, blank=True)
-    sport_3 = models.CharField("deporte 3", max_length=40, blank=True)
+    sport_1 = models.CharField(
+        "deporte 1", max_length=40, choices=SPORT_CHOICES, blank=True
+    )
+    sport_2 = models.CharField(
+        "deporte 2", max_length=40, choices=SPORT_CHOICES, blank=True
+    )
+    sport_3 = models.CharField(
+        "deporte 3", max_length=40, choices=SPORT_CHOICES, blank=True
+    )
 
     def __str__(self):
         return f"Perfil de {self.user.email}"
@@ -41,3 +54,8 @@ class AthleteProfile(models.Model):
     @property
     def sports(self):
         return [sport for sport in (self.sport_1, self.sport_2, self.sport_3) if sport]
+
+    @property
+    def sports_display(self):
+        labels = dict(self.SPORT_CHOICES)
+        return [labels.get(sport, sport) for sport in self.sports]

@@ -37,7 +37,7 @@
         </div>
         <dl class="details-list">
             <div><dt>Frecuencia</dt><dd>{{ profile.get_activity_frequency_display|default:"Aún no indicada" }}</dd></div>
-            <div><dt>Deportes</dt><dd>{{ profile.sports|join:", "|default:"Aún no indicados" }}</dd></div>
+            <div><dt>Deportes</dt><dd>{{ profile.sports_display|join:", "|default:"Aún no indicados" }}</dd></div>
         </dl>
         <a class="text-link" href="{% url 'edit_profile' %}?section=activity">Editar actividad <span aria-hidden="true">→</span></a>
     </article>

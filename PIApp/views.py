@@ -50,6 +50,19 @@ MEALS = {
 }
 
 
+def _activity_context(profile):
+    sport_choices = list(AthleteProfile.SPORT_CHOICES)
+    known_sports = {value for value, _ in sport_choices}
+    for sport in profile.sports:
+        if sport not in known_sports:
+            sport_choices.append((sport, sport))
+    return {"profile": profile, "sport_choices": sport_choices}
+
+
+def _posted_sports(request):
+    return [request.POST.get(f"sport_{index}", "").strip() for index in range(1, 4)]
+
+
 def login_view(request):
     if request.user.is_authenticated:
         return redirect("dashboard")
@@ -139,17 +152,27 @@ def activity_setup(request):
     profile, _ = AthleteProfile.objects.get_or_create(user=request.user)
     if request.method == "POST":
         frequency = request.POST.get("activity_frequency", "")
-        sports = [request.POST.get(f"sport_{index}", "").strip() for index in range(1, 4)]
+        sports = _posted_sports(request)
+        allowed_sports = {
+            value for value, _ in _activity_context(profile)["sport_choices"]
+        }
         if frequency not in dict(AthleteProfile.ACTIVITY_CHOICES):
             messages.error(request, "Selecciona con qué frecuencia haces deporte.")
-            return render(request, "activity.html", {"profile": profile})
+            return render(request, "activity.html", _activity_context(profile))
+        if any(sport and sport not in allowed_sports for sport in sports):
+            messages.error(request, "Selecciona deportes de la lista.")
+            return render(request, "activity.html", _activity_context(profile))
+        selected_sports = [sport for sport in sports if sport]
+        if len(selected_sports) != len(set(selected_sports)):
+            messages.error(request, "No selecciones el mismo deporte más de una vez.")
+            return render(request, "activity.html", _activity_context(profile))
 
         profile.activity_frequency = frequency
         profile.sport_1, profile.sport_2, profile.sport_3 = sports
         profile.save()
         return redirect("dashboard")
 
-    return render(request, "activity.html", {"profile": profile})
+    return render(request, "activity.html", _activity_context(profile))
 
 
 @login_required
@@ -253,20 +276,32 @@ def edit_profile(request):
                 messages.error(request, error)
         elif section == "activity":
             frequency = request.POST.get("activity_frequency", "")
-            if frequency in dict(AthleteProfile.ACTIVITY_CHOICES):
+            sports = _posted_sports(request)
+            allowed_sports = {
+                value for value, _ in _activity_context(profile)["sport_choices"]
+            }
+            selected_sports = [sport for sport in sports if sport]
+            if (
+                frequency in dict(AthleteProfile.ACTIVITY_CHOICES)
+                and all(not sport or sport in allowed_sports for sport in sports)
+                and len(selected_sports) == len(set(selected_sports))
+            ):
                 profile.activity_frequency = frequency
-                profile.sport_1 = request.POST.get("sport_1", "").strip()
-                profile.sport_2 = request.POST.get("sport_2", "").strip()
-                profile.sport_3 = request.POST.get("sport_3", "").strip()
+                profile.sport_1, profile.sport_2, profile.sport_3 = sports
                 profile.save()
                 messages.success(request, "Tu actividad se actualizó.")
                 return redirect("dashboard")
-            messages.error(request, "Selecciona con qué frecuencia haces deporte.")
+            if frequency not in dict(AthleteProfile.ACTIVITY_CHOICES):
+                messages.error(request, "Selecciona con qué frecuencia haces deporte.")
+            elif any(sport and sport not in allowed_sports for sport in sports):
+                messages.error(request, "Selecciona deportes de la lista.")
+            else:
+                messages.error(request, "No selecciones el mismo deporte más de una vez.")
 
     return render(
         request,
         "edit_profile.html",
-        {"profile": profile, "section": section},
+        {**_activity_context(profile), "section": section},
     )
 
 

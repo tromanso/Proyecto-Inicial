@@ -27,24 +27,26 @@ class AthleteFlowTests(TestCase):
         response = self.client.get(reverse("activity_setup"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Hago deporte siempre")
+        for sport in ("Fútbol", "Voleibol", "Básquetbol", "Tenis", "Boxeo"):
+            self.assertContains(response, sport)
         response = self.client.post(
             reverse("activity_setup"),
             {
                 "activity_frequency": "siempre",
-                "sport_1": "Fútbol",
-                "sport_2": "Natación",
+                "sport_1": "futbol",
+                "sport_2": "tenis",
                 "sport_3": "",
             },
         )
 
         self.assertRedirects(response, reverse("dashboard"))
         profile.refresh_from_db()
-        self.assertEqual(profile.sports, ["Fútbol", "Natación"])
+        self.assertEqual(profile.sports, ["futbol", "tenis"])
         response = self.client.get(reverse("dashboard"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Calendario de comidas")
         self.assertContains(response, "Tu IMC")
-        self.assertContains(response, "Natación")
+        self.assertContains(response, "Fútbol")
         self.assertContains(response, "Desayuno")
 
     def test_login_and_profile_edits(self):
@@ -89,13 +91,42 @@ class AthleteFlowTests(TestCase):
             {
                 "section": "activity",
                 "activity_frequency": "pocas_veces",
-                "sport_1": "Ciclismo",
+                "sport_1": "voleibol",
             },
         )
         self.assertRedirects(response, reverse("dashboard"))
         profile.refresh_from_db()
         self.assertEqual(profile.activity_frequency, "pocas_veces")
-        self.assertEqual(profile.sport_1, "Ciclismo")
+        self.assertEqual(profile.sport_1, "voleibol")
+
+    def test_activity_rejects_sports_outside_the_selection_list(self):
+        user = User.objects.create_user(
+            username="athlete@example.com",
+            email="athlete@example.com",
+            password="secure-pass-123",
+        )
+        profile = AthleteProfile.objects.create(
+            user=user,
+            weight_kg=70,
+            height_cm=175,
+            food_budget="economico",
+        )
+        self.client.force_login(user)
+
+        response = self.client.post(
+            reverse("activity_setup"),
+            {
+                "activity_frequency": "siempre",
+                "sport_1": "natacion",
+                "sport_2": "",
+                "sport_3": "",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Selecciona deportes de la lista.")
+        profile.refresh_from_db()
+        self.assertEqual(profile.sports, [])
 
     def test_invalid_signup_does_not_create_account(self):
         response = self.client.post(
