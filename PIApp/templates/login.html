@@ -1,16 +1,13 @@
 {% extends "base.html" %}
+{% load static %}
+{% block body_class %}login-page{% endblock %}
 {% block title %}Iniciar sesión · FitApp{% endblock %}
 {% block content %}
-<section class="auth-layout">
-    <div class="welcome-panel">
-        <p class="eyebrow">ALIMENTACIÓN Y DEPORTE</p>
-        <h1>Tu bienestar también se entrena.</h1>
-        <p>Organiza tus hábitos y encuentra ideas de comidas que se ajusten a tus preferencias.</p>
-        <div class="welcome-decoration" aria-hidden="true">✳</div>
-    </div>
-    <div class="form-panel">
+<section class="login-background">
+    <img class="login-background-image" src="{% static 'PIApp/login-background.webp' %}" alt="">
+    <div class="login-card">
         <p class="eyebrow">QUÉ BUENO VERTE</p>
-        <h2>Iniciar sesión</h2>
+        <h1>Iniciar sesión</h1>
         <p class="muted">Ingresa a tu cuenta para continuar.</p>
         <form method="post">
             {% csrf_token %}

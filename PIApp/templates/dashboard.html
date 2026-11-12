@@ -40,16 +40,21 @@
             <div><dt>Deportes</dt><dd>{{ profile.sports_display|join:", "|default:"Aún no indicados" }}</dd></div>
         </dl>
         <a class="text-link" href="{% url 'edit_profile' %}?section=activity">Editar actividad <span aria-hidden="true">→</span></a>
+        <a class="text-link" href="{% url 'sport_guides' %}">Guías para mis deportes <span aria-hidden="true">→</span></a>
     </article>
 </section>
 
 <section class="card bmi-card">
     <div>
-        <p class="eyebrow">REFERENCIA INFORMATIVA</p>
+        <p class="eyebrow">REFERENCIA ORIENTATIVA PARA ADULTOS</p>
         <h2>Tu IMC: {{ bmi }}</h2>
         <p class="muted">{{ bmi_label }}</p>
+        <p class="bmi-ranges">Rangos: menos de 18.5, por debajo del rango saludable · 18.5–24.9, saludable · 25–29.9, sobrepeso · 30 o más, obesidad.</p>
     </div>
-    <p class="bmi-note">El IMC es una referencia general, no un diagnóstico ni una indicación médica. Estas ideas de comidas son ejemplos y no sustituyen la orientación de un profesional de nutrición.</p>
+    <div class="bmi-disclaimer">
+        <p class="bmi-note">El IMC se calcula dividiendo el peso en kg entre la estatura en metros al cuadrado. Es una referencia, no un diagnóstico; no considera por sí solo la masa muscular ni todos los factores de salud. En menores se interpreta según la edad y el sexo.</p>
+        <p class="bmi-note">Las ideas de comidas son ejemplos y no sustituyen la orientación de un profesional de nutrición. <a href="https://www.who.int/es/news-room/fact-sheets/detail/obesity-and-overweight">Consulta la referencia de la OMS</a>.</p>
+    </div>
 </section>
 
 <section class="calendar-section">
@@ -59,7 +64,10 @@
             <h2>Calendario de comidas</h2>
             <p class="muted">Ejemplos de comidas con un presupuesto {{ profile.get_food_budget_display|lower }}.</p>
         </div>
-        <span class="month-pill">{{ month_name }}</span>
+        <div class="calendar-actions">
+            <span class="month-pill">{{ month_name }}</span>
+            <a class="button button-primary" href="{% url 'download_calendar' %}">Descargar PDF</a>
+        </div>
     </div>
     <div class="calendar-scroll">
         <div class="calendar-grid" role="table" aria-label="Calendario mensual de comidas">

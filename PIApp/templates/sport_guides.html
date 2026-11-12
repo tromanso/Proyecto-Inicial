@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Guías deportivas · FitApp{% endblock %}
+{% block content %}
+<section class="guides-heading">
+    <p class="eyebrow">RECURSOS PARA TU RUTINA</p>
+    <h1>Guías para tus deportes</h1>
+    <p class="muted">Consulta recursos de nutrición deportiva y fuentes reconocidas relacionadas con los deportes de tu perfil.</p>
+</section>
+
+<section class="card nutrition-guide">
+    <div>
+        <p class="eyebrow">ALIMENTACIÓN DEPORTIVA</p>
+        <h2>{{ nutrition_guide.title }}</h2>
+        <p class="muted">{{ nutrition_guide.description }}</p>
+        <p class="guide-source">{{ nutrition_guide.organization }}</p>
+    </div>
+    <a class="button button-primary" href="{{ nutrition_guide.url }}" target="_blank" rel="noopener noreferrer">Ver guía <span aria-hidden="true">↗</span></a>
+</section>
+
+<section class="sport-guides-section" aria-labelledby="sport-guides-title">
+    <h2 id="sport-guides-title">Recursos por deporte</h2>
+    {% if sport_guides %}
+        <div class="sport-guide-grid">
+            {% for guide in sport_guides %}
+                <article class="card sport-guide-card">
+                    <p class="eyebrow">TU DEPORTE</p>
+                    <h3>{{ guide.name }}</h3>
+                    <p class="muted">{{ guide.description }}</p>
+                    <div class="guide-resource">
+                        <p class="guide-source">{{ guide.organization }}</p>
+                        <a class="text-link" href="{{ guide.url }}" target="_blank" rel="noopener noreferrer">{{ guide.title }} <span aria-hidden="true">↗</span></a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card no-sports">
+            <p class="muted">Aún no has indicado qué deportes practicas, así que todavía no podemos personalizar esta sección.</p>
+            <a class="text-link" href="{% url 'edit_profile' %}?section=activity">Añadir deportes a mi perfil <span aria-hidden="true">→</span></a>
+        </div>
+    {% endif %}
+</section>
+
+<p class="guides-note">Algunos materiales están en inglés. Estos enlaces llevan a sitios externos y ofrecen información educativa general. Para orientación personal, lesiones o cambios en tu alimentación, consulta a profesionales de salud y nutrición.</p>
+{% endblock %}

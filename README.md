@@ -8,7 +8,9 @@ python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
 ```
 
-Abre `http://127.0.0.1:8000/` para crear una cuenta. El registro lleva a la configuración de actividad y luego al inicio, donde puedes editar tu perfil y consultar el calendario de ejemplos de comidas.
+Abre `http://127.0.0.1:8000/` para conocer FitApp, iniciar sesión o crear una cuenta. El registro lleva a la configuración de actividad y luego al inicio, donde puedes editar tu perfil y consultar el calendario de ejemplos de comidas.
+Desde el calendario del inicio también puedes descargar las sugerencias del mes en PDF.
+En la página "Guías deportivas" encontrarás recursos de nutrición y enlaces relacionados con los deportes de tu perfil.
 
 ## Flujo básico con Git
 

@@ -1,5 +1,7 @@
 import calendar
+from io import BytesIO
 from math import isfinite
+from xml.sax.saxutils import escape
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -8,8 +10,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.db import transaction
 from django.core.exceptions import ValidationError
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 from .models import AthleteProfile
 
@@ -49,6 +56,46 @@ MEALS = {
     ],
 }
 
+NUTRITION_GUIDE = {
+    "title": "Nutrición para el entrenamiento y la competencia",
+    "organization": "Australian Institute of Sport",
+    "description": "Módulos sobre alimentación, hidratación y recuperación para deportistas.",
+    "url": "https://www.ausport.gov.au/ais/nutrition/performance-nutrition-hq-modules",
+}
+
+SPORT_GUIDES = {
+    "futbol": {
+        "description": "Información médica sobre lesiones y prevención en fútbol.",
+        "title": "Salud y prevención en fútbol",
+        "organization": "Sports Medicine Today · AMSSM",
+        "url": "https://www.sportsmedtoday.com/soccer-ct-9.htm",
+    },
+    "voleibol": {
+        "description": "Recursos de educación y desarrollo integral para la comunidad del voleibol.",
+        "title": "Educación y desarrollo en voleibol",
+        "organization": "USA Volleyball",
+        "url": "https://usavolleyball.org/resources/",
+    },
+    "basquetbol": {
+        "description": "Introducción a salud y seguridad para la práctica del baloncesto.",
+        "title": "Salud y seguridad en baloncesto",
+        "organization": "USA Basketball",
+        "url": "https://www.usab.com/health",
+    },
+    "tenis": {
+        "description": "Información sobre lesiones, factores de riesgo y prevención en tenis.",
+        "title": "Salud y prevención en tenis",
+        "organization": "Sports Medicine Today · AMSSM",
+        "url": "https://www.sportsmedtoday.com/tennis-ct-73.htm",
+    },
+    "boxeo": {
+        "description": "Referencia médica para artes marciales y deportes de combate; no es exclusiva del boxeo.",
+        "title": "Cuidados en deportes de combate",
+        "organization": "Sports Medicine Today · AMSSM",
+        "url": "https://www.sportsmedtoday.com/martial-arts-ct-31.htm",
+    },
+}
+
 
 def _activity_context(profile):
     sport_choices = list(AthleteProfile.SPORT_CHOICES)
@@ -61,6 +108,37 @@ def _activity_context(profile):
 
 def _posted_sports(request):
     return [request.POST.get(f"sport_{index}", "").strip() for index in range(1, 4)]
+
+
+def _calendar_weeks(year, month, budget):
+    meals = MEALS[budget or "economico"]
+    return [
+        [
+            {
+                "date": day,
+                "in_month": day.month == month,
+                "meals": meals[day.weekday()],
+            }
+            for day in week
+        ]
+        for week in calendar.Calendar(firstweekday=0).monthdatescalendar(year, month)
+    ]
+
+
+def _bmi_category(value):
+    if value < 18.5:
+        return "Por debajo del rango saludable"
+    if value < 25:
+        return "Rango saludable"
+    if value < 30:
+        return "Sobrepeso"
+    return "Obesidad"
+
+
+def home(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+    return render(request, "home.html")
 
 
 def login_view(request):
@@ -179,33 +257,14 @@ def activity_setup(request):
 def dashboard(request):
     profile, _ = AthleteProfile.objects.get_or_create(user=request.user)
     today = timezone.localdate()
-    month_days = calendar.Calendar(firstweekday=0).monthdatescalendar(
-        today.year, today.month
+    calendar_weeks = _calendar_weeks(
+        today.year, today.month, profile.food_budget
     )
-    meals = MEALS[profile.food_budget or "economico"]
-    calendar_weeks = []
-    for week in month_days:
-        calendar_weeks.append(
-            [
-                {
-                    "date": day,
-                    "in_month": day.month == today.month,
-                    "meals": meals[day.weekday()],
-                }
-                for day in week
-            ]
-        )
 
     height_m = profile.height_cm / 100
-    bmi = round(profile.weight_kg / (height_m * height_m), 1)
-    if bmi < 18.5:
-        bmi_label = "Por debajo del rango de referencia"
-    elif bmi < 25:
-        bmi_label = "Dentro del rango de referencia"
-    elif bmi < 30:
-        bmi_label = "Por encima del rango de referencia"
-    else:
-        bmi_label = "Rango alto de referencia"
+    bmi_value = profile.weight_kg / (height_m * height_m)
+    bmi = round(bmi_value, 1)
+    bmi_label = _bmi_category(bmi_value)
 
     return render(
         request,
@@ -218,6 +277,166 @@ def dashboard(request):
             "month_name": f"{MONTHS_ES[today.month - 1]} {today.year}",
         },
     )
+
+
+@login_required
+def sport_guides(request):
+    profile, _ = AthleteProfile.objects.get_or_create(user=request.user)
+    guides = []
+    for sport, display_name in zip(profile.sports, profile.sports_display):
+        guide = SPORT_GUIDES.get(sport)
+        if guide:
+            guides.append({"name": display_name, **guide})
+        else:
+            guides.append(
+                {
+                    "name": display_name,
+                    "description": "Consulta información general sobre prevención de lesiones deportivas.",
+                    "title": "Guías de prevención de lesiones",
+                    "organization": "Sports Medicine Australia",
+                    "url": "https://sma.org.au/resources/injury-fact-sheets/",
+                }
+            )
+    return render(
+        request,
+        "sport_guides.html",
+        {
+            "sport_guides": guides,
+            "nutrition_guide": NUTRITION_GUIDE,
+        },
+    )
+
+
+@login_required
+def download_calendar(request):
+    profile, _ = AthleteProfile.objects.get_or_create(user=request.user)
+    today = timezone.localdate()
+    calendar_weeks = _calendar_weeks(
+        today.year, today.month, profile.food_budget
+    )
+    month_name = f"{MONTHS_ES[today.month - 1]} {today.year}"
+    output = BytesIO()
+    document = SimpleDocTemplate(
+        output,
+        pagesize=landscape(A4),
+        rightMargin=24,
+        leftMargin=24,
+        topMargin=22,
+        bottomMargin=22,
+        title=f"Calendario de comidas - {month_name}",
+    )
+    title_style = ParagraphStyle(
+        "CalendarTitle",
+        fontName="Helvetica-Bold",
+        fontSize=17,
+        leading=21,
+        textColor=colors.HexColor("#1d3028"),
+    )
+    subtitle_style = ParagraphStyle(
+        "CalendarSubtitle",
+        fontName="Helvetica",
+        fontSize=9,
+        leading=12,
+        textColor=colors.HexColor("#6b7972"),
+    )
+    weekday_style = ParagraphStyle(
+        "CalendarWeekday",
+        fontName="Helvetica-Bold",
+        fontSize=8,
+        leading=10,
+        textColor=colors.white,
+        alignment=1,
+    )
+    cell_style = ParagraphStyle(
+        "CalendarCell",
+        fontName="Helvetica",
+        fontSize=6.5,
+        leading=8,
+        textColor=colors.HexColor("#1d3028"),
+    )
+    note_style = ParagraphStyle(
+        "CalendarNote",
+        fontName="Helvetica",
+        fontSize=7,
+        leading=9,
+        textColor=colors.HexColor("#6b7972"),
+    )
+    story = [
+        Paragraph(f"Calendario de comidas · {month_name}", title_style),
+        Paragraph(
+            "Ideas de comidas según tu presupuesto: "
+            f"{escape(profile.get_food_budget_display() or 'Económico')}",
+            subtitle_style,
+        ),
+        Spacer(1, 10),
+    ]
+    weekdays = ("Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom")
+    table_data = [[Paragraph(day, weekday_style) for day in weekdays]]
+    for week in calendar_weeks:
+        row = []
+        for day in week:
+            day_color = "#89938d" if not day["in_month"] else "#245c45"
+            meal_text = "<br/>".join(
+                f"<b>{label}:</b> {escape(meal)}"
+                for label, meal in zip(
+                    ("Desayuno", "Comida", "Cena"), day["meals"]
+                )
+            )
+            row.append(
+                Paragraph(
+                    f'<font color="{day_color}"><b>{day["date"].day}</b></font>'
+                    f"<br/>{meal_text}",
+                    cell_style,
+                )
+            )
+        table_data.append(row)
+
+    column_width = document.width / 7
+    table = Table(
+        table_data,
+        colWidths=[column_width] * 7,
+        repeatRows=1,
+        hAlign="LEFT",
+    )
+    table_commands = [
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#245c45")),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#dce4dc")),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 5),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+        ("TOPPADDING", (0, 0), (-1, -1), 5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+    ]
+    for row_index, week in enumerate(calendar_weeks, start=1):
+        for column_index, day in enumerate(week):
+            if not day["in_month"]:
+                table_commands.append(
+                    (
+                        "BACKGROUND",
+                        (column_index, row_index),
+                        (column_index, row_index),
+                        colors.HexColor("#f0f3ef"),
+                    )
+                )
+    table.setStyle(TableStyle(table_commands))
+    story.extend(
+        [
+            table,
+            Spacer(1, 8),
+            Paragraph(
+                "Estas sugerencias son ejemplos y no sustituyen la orientación "
+                "de un profesional de nutrición.",
+                note_style,
+            ),
+        ]
+    )
+    document.build(story)
+
+    response = HttpResponse(output.getvalue(), content_type="application/pdf")
+    response["Content-Disposition"] = (
+        f'attachment; filename="calendario-comidas-{today:%Y-%m}.pdf"'
+    )
+    return response
 
 
 @login_required

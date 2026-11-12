@@ -7,15 +7,21 @@
     <title>{% block title %}FitApp{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'PIApp/styles.css' %}">
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <header class="site-header">
-        <a class="brand" href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}">
+        <a class="brand" href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'home' %}{% endif %}">
             <span class="brand-mark">F</span> FitApp
         </a>
         {% if user.is_authenticated %}
             <nav aria-label="Navegación principal">
                 <a href="{% url 'dashboard' %}">Inicio</a>
+                <a href="{% url 'sport_guides' %}">Guías deportivas</a>
                 <a href="{% url 'logout' %}">Cerrar sesión</a>
+            </nav>
+        {% else %}
+            <nav aria-label="Acceso a tu cuenta">
+                <a href="{% url 'login' %}">Iniciar sesión</a>
+                <a href="{% url 'signup' %}">Crear cuenta</a>
             </nav>
         {% endif %}
     </header>

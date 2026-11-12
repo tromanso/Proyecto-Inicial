@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}FitApp · Hábitos saludables, paso a paso{% endblock %}
+{% block content %}
+<section class="landing-hero">
+    <div class="landing-copy">
+        <p class="eyebrow">ALIMENTACIÓN Y DEPORTE</p>
+        <h1>Pequeños hábitos. Una vida más activa.</h1>
+        <p class="landing-description">FitApp te ayuda a organizar tu actividad física y descubrir ideas de comidas que se ajustan a tu presupuesto.</p>
+        <div class="landing-actions">
+            <a class="button button-primary" href="{% url 'login' %}">Iniciar sesión</a>
+            <a class="button button-secondary" href="{% url 'signup' %}">Crear cuenta</a>
+        </div>
+    </div>
+    <figure class="landing-art" aria-hidden="true">
+        <img src="{% static 'PIApp/fitapp-cartoon.svg' %}" alt="">
+        <figcaption>Muévete · aliméntate · disfruta</figcaption>
+    </figure>
+</section>
+
+<section class="features-section" aria-labelledby="features-title">
+    <p class="eyebrow">TU ESPACIO SALUDABLE</p>
+    <h2 id="features-title">Todo para acompañar tu rutina</h2>
+    <div class="feature-grid">
+        <article class="feature-card">
+            <span class="icon-bubble" aria-hidden="true">01</span>
+            <h3>Organiza tu actividad</h3>
+            <p>Registra con qué frecuencia haces deporte y cuáles son tus actividades favoritas.</p>
+        </article>
+        <article class="feature-card">
+            <span class="icon-bubble icon-bubble-lime" aria-hidden="true">02</span>
+            <h3>Ideas de comidas</h3>
+            <p>Consulta sugerencias de desayuno, comida y cena pensadas según tu presupuesto.</p>
+        </article>
+        <article class="feature-card">
+            <span class="icon-bubble" aria-hidden="true">03</span>
+            <h3>Tu perfil, a tu medida</h3>
+            <p>Guarda tus preferencias y actualiza tu información cuando lo necesites.</p>
+        </article>
+    </div>
+</section>
+{% endblock %}

@@ -134,9 +134,73 @@ legend { margin-bottom: 12px; }
 }
 .button-primary { background: var(--green); color: white; }
 .button-primary:hover { background: var(--green-dark); }
+.button-secondary { border: 1px solid var(--green); background: white; color: var(--green); }
+.button-secondary:hover { background: #f0f5ef; }
 .button-full { width: 100%; }
 .form-switch { margin: 24px 0 0; color: var(--muted); text-align: center; font-size: 14px; }
 .form-switch a { font-weight: 700; text-decoration: none; }
+.landing-hero {
+    display: grid;
+    grid-template-columns: 1.15fr .85fr;
+    align-items: center;
+    gap: 48px;
+    padding: clamp(32px, 6vw, 72px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: var(--surface);
+    box-shadow: 0 18px 50px #193b2610;
+}
+.landing-copy h1 { max-width: 620px; font-size: clamp(40px, 6vw, 64px); }
+.landing-description { max-width: 540px; color: var(--muted); font-size: 17px; line-height: 1.7; }
+.landing-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.landing-art { position: relative; margin: 0; }
+.landing-art img { display: block; width: 100%; height: auto; }
+.landing-art figcaption { position: absolute; right: 4%; bottom: 3%; padding: 12px 18px; border: 1px solid var(--border); border-radius: 999px; background: #ffffffed; color: var(--green); font-size: 13px; font-weight: 700; box-shadow: 0 8px 24px #193b2610; }
+body.login-page { display: flex; min-height: 100vh; flex-direction: column; }
+body.login-page .page { display: flex; width: 100%; flex: 1; flex-direction: column; margin: 0; }
+body.login-page .messages { width: min(480px, calc(100% - 32px)); margin: 16px auto 0; }
+.login-background {
+    position: relative;
+    display: grid;
+    flex: 1;
+    min-height: min(680px, calc(100vh - 132px));
+    place-items: center;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 40px 20px;
+    background: #eaf2df;
+}
+.login-background-image { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.login-background::before { position: absolute; z-index: 1; inset: 0; background: #f4f7f13d; content: ""; pointer-events: none; }
+.login-card { position: relative; z-index: 2; width: min(100%, 460px); padding: clamp(30px, 5vw, 48px); border: 1px solid #e4eae2e6; border-radius: 22px; background: #fffffff2; box-shadow: 0 18px 56px #193b2633; backdrop-filter: blur(5px); }
+.login-card h1 { margin-bottom: 8px; font-size: 30px; }
+.login-card form { margin-top: 28px; }
+body.login-page .site-footer { background: white; }
+.features-section { margin-top: 56px; }
+.features-section > h2 { margin-bottom: 24px; font-size: 30px; }
+.feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.feature-card { padding: 24px; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); }
+.feature-card .icon-bubble { margin-bottom: 20px; font-size: 13px; }
+.feature-card h3 { margin: 0 0 10px; font-size: 18px; }
+.feature-card p { margin: 0; color: var(--muted); line-height: 1.6; }
+.guides-heading { margin-bottom: 28px; }
+.guides-heading h1 { margin-bottom: 10px; }
+.guides-heading .muted { max-width: 720px; margin-bottom: 0; }
+.nutrition-guide { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 26px; }
+.nutrition-guide h2 { margin-bottom: 8px; }
+.nutrition-guide .muted { margin-bottom: 8px; }
+.guide-source { margin: 0; color: var(--muted); font-size: 12px; font-weight: 700; }
+.sport-guides-section { margin-top: 40px; }
+.sport-guides-section > h2 { margin-bottom: 18px; font-size: 26px; }
+.sport-guide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.sport-guide-card { display: flex; min-height: 230px; flex-direction: column; padding: 24px; }
+.sport-guide-card h3 { margin: 0 0 10px; font-size: 20px; }
+.sport-guide-card > .muted { margin: 0 0 24px; }
+.guide-resource { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border); }
+.guide-resource .text-link { margin-top: 8px; }
+.no-sports { padding: 24px; }
+.no-sports .muted { margin-bottom: 14px; }
+.guides-note { max-width: 860px; margin-top: 24px; color: var(--muted); font-size: 13px; line-height: 1.6; }
 .form-page { max-width: 760px; margin: auto; }
 .form-page .form-panel { margin: 22px auto 0; border: 1px solid var(--border); border-radius: 20px; background: var(--surface); box-shadow: 0 14px 40px #193b260b; }
 .back-link { color: var(--green); font-size: 14px; font-weight: 600; text-decoration: none; }
@@ -161,12 +225,15 @@ legend { margin-bottom: 12px; }
 .text-link { display: inline-flex; gap: 8px; align-items: center; color: var(--green); font-size: 14px; font-weight: 700; text-decoration: none; }
 .bmi-card { display: flex; align-items: center; justify-content: space-between; gap: 36px; margin-top: 20px; padding: 22px 24px; }
 .bmi-card h2 { margin-bottom: 4px; }
-.bmi-card .muted, .bmi-note { margin: 0; }
+.bmi-card .muted, .bmi-note, .bmi-ranges { margin: 0; }
 .bmi-note { max-width: 530px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.bmi-disclaimer { display: grid; max-width: 540px; gap: 10px; }
+.bmi-ranges { max-width: 500px; color: var(--muted); font-size: 12px; line-height: 1.6; }
 .calendar-section { margin-top: 46px; }
 .calendar-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 20px; }
 .calendar-heading h2 { margin-bottom: 6px; font-size: 28px; }
 .calendar-heading .muted { margin: 0; }
+.calendar-actions { display: flex; align-items: center; gap: 12px; }
 .month-pill { padding: 10px 16px; border-radius: 999px; background: var(--lime); color: var(--green-dark); font-size: 14px; font-weight: 700; text-transform: capitalize; }
 .calendar-scroll { overflow-x: auto; padding-bottom: 8px; }
 .calendar-grid { min-width: 900px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
@@ -184,6 +251,11 @@ legend { margin-bottom: 12px; }
     .welcome-panel { min-height: 270px; }
     .welcome-decoration { right: -34px; bottom: -128px; font-size: 250px; }
     .form-panel { padding: 32px 24px; }
+    .landing-hero { grid-template-columns: 1fr; gap: 32px; padding: 32px 24px; }
+    .login-background { min-height: calc(100vh - 120px); padding: 28px 16px; background-position: center; }
+    .feature-grid { grid-template-columns: 1fr; }
+    .sport-guide-grid { grid-template-columns: 1fr; }
+    .nutrition-guide { align-items: flex-start; flex-direction: column; }
     .summary-grid { grid-template-columns: 1fr; }
     .bmi-card, .calendar-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
 }
